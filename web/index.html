@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHAE — Smalltalk-80 GUI Calculator</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-wrapper">
+        <!-- Telemetry Header -->
+        <header class="telemetry-header">
+            <div class="brand-section">
+                <span class="brand-badge">SHAE</span>
+                <span class="brand-title">Smalltalk-80 GUI Calculator</span>
+            </div>
+            <div class="telemetry-stats">
+                <div class="stat-item">
+                    <span class="led-indicator"></span>
+                    <span>RUNTIME: SMALLTALK-80 MVC</span>
+                </div>
+                <div class="stat-item">
+                    <span class="led-indicator led-cyan"></span>
+                    <span>ENGINE: SUNIT VERIFIED</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Workspace Viewport -->
+        <main class="main-viewport">
+            <!-- Left: Primary Calculator Window -->
+            <section class="calculator-window" aria-label="Calculator Device">
+                <div class="window-titlebar">
+                    <span class="window-title">SYS://SHAE.CALC.MORPHIC</span>
+                    <div class="window-controls">
+                        <button class="window-ctrl-btn" title="Inspect Object">?</button>
+                        <button class="window-ctrl-btn" title="Minimize">_</button>
+                        <button class="window-ctrl-btn" title="Maximize">□</button>
+                        <button class="window-ctrl-btn" title="Reset" id="btn-win-reset">✕</button>
+                    </div>
+                </div>
+
+                <!-- Display Unit & Annunciators -->
+                <div class="display-unit">
+                    <div class="annunciator-bar">
+                        <span class="annunciator-item active" id="ann-base">BASE: DEC</span>
+                        <span class="annunciator-item" id="ann-angle">DEG</span>
+                        <span class="annunciator-item" id="ann-mem">MEM: OFF</span>
+                    </div>
+                    <div class="secondary-display" id="sub-display">&nbsp;</div>
+                    <div class="primary-display" id="main-display">0</div>
+                </div>
+
+                <!-- Mode Selection Toolbar -->
+                <nav class="mode-toolbar">
+                    <div class="mode-tab-group">
+                        <button class="mode-btn active" data-mode="standard">STD</button>
+                        <button class="mode-btn" data-mode="scientific">SCI</button>
+                        <button class="mode-btn" data-mode="programmer">PROG</button>
+                    </div>
+                    <div class="quick-toggles">
+                        <button class="toggle-btn" id="toggle-angle" title="Toggle Angle Mode (Deg/Rad)">DEG</button>
+                        <button class="toggle-btn" id="toggle-audio" title="Toggle Mechanical Audio Click">AUDIO: ON</button>
+                    </div>
+                </nav>
+
+                <!-- Keypad Surface -->
+                <div class="keypad-container">
+                    <!-- Memory Register Bank -->
+                    <div class="key-grid grid-memory">
+                        <button class="key key-small key-action" data-action="MC">MC</button>
+                        <button class="key key-small" data-action="MR">MR</button>
+                        <button class="key key-small" data-action="M+">M+</button>
+                        <button class="key key-small" data-action="M-">M-</button>
+                        <button class="key key-small" data-action="MS">MS</button>
+                    </div>
+
+                    <!-- Scientific Row/Grid (Visible in SCI mode) -->
+                    <div class="key-grid grid-scientific" id="grid-scientific" style="display: none;">
+                        <button class="key key-small" data-action="sin">sin</button>
+                        <button class="key key-small" data-action="cos">cos</button>
+                        <button class="key key-small" data-action="tan">tan</button>
+                        <button class="key key-small" data-action="ln">ln</button>
+                        <button class="key key-small" data-action="log">log</button>
+
+                        <button class="key key-small" data-action="sqrt">√</button>
+                        <button class="key key-small" data-action="sqr">x²</button>
+                        <button class="key key-small" data-action="cube">x³</button>
+                        <button class="key key-small key-op" data-action="^">x^y</button>
+                        <button class="key key-small" data-action="fact">n!</button>
+
+                        <button class="key key-small" data-action="1/x">1/x</button>
+                        <button class="key key-small" data-action="pi">π</button>
+                        <button class="key key-small" data-action="e">e</button>
+                        <button class="key key-small" data-action="(">(</button>
+                        <button class="key key-small" data-action=")">)</button>
+                    </div>
+
+                    <!-- Programmer Row/Grid (Visible in PROG mode) -->
+                    <div class="key-grid grid-programmer" id="grid-programmer" style="display: none;">
+                        <button class="key key-small" data-base="HEX">HEX</button>
+                        <button class="key key-small" data-base="DEC">DEC</button>
+                        <button class="key key-small" data-base="BIN">BIN</button>
+                        <button class="key key-small" data-base="OCT">OCT</button>
+                        <button class="key key-small key-op" data-action="AND">AND</button>
+                        <button class="key key-small key-op" data-action="OR">OR</button>
+
+                        <button class="key key-small" data-digit="A">A</button>
+                        <button class="key key-small" data-digit="B">B</button>
+                        <button class="key key-small" data-digit="C_HEX">C</button>
+                        <button class="key key-small" data-digit="D">D</button>
+                        <button class="key key-small key-op" data-action="XOR">XOR</button>
+                        <button class="key key-small key-op" data-action="NOT">NOT</button>
+
+                        <button class="key key-small" data-digit="E">E</button>
+                        <button class="key key-small" data-digit="F">F</button>
+                        <button class="key key-small" data-action="<<">&lt;&lt;</button>
+                        <button class="key key-small" data-action=">>">&gt;&gt;</button>
+                        <button class="key key-small" data-action="Undo">UNDO</button>
+                        <button class="key key-small" data-action="Redo">REDO</button>
+                    </div>
+
+                    <!-- Standard Main Arithmetic Grid -->
+                    <div class="key-grid grid-main">
+                        <button class="key key-action" data-action="C">C</button>
+                        <button class="key key-action" data-action="CE">CE</button>
+                        <button class="key" data-action="Bk">⌫</button>
+                        <button class="key key-op" data-action="/">÷</button>
+
+                        <button class="key" data-digit="7">7</button>
+                        <button class="key" data-digit="8">8</button>
+                        <button class="key" data-digit="9">9</button>
+                        <button class="key key-op" data-action="*">×</button>
+
+                        <button class="key" data-digit="4">4</button>
+                        <button class="key" data-digit="5">5</button>
+                        <button class="key" data-digit="6">6</button>
+                        <button class="key key-op" data-action="-">−</button>
+
+                        <button class="key" data-digit="1">1</button>
+                        <button class="key" data-digit="2">2</button>
+                        <button class="key" data-digit="3">3</button>
+                        <button class="key key-op" data-action="+">+</button>
+
+                        <button class="key" data-action="+/-">±</button>
+                        <button class="key key-zero" data-digit="0">0</button>
+                        <button class="key" data-action=".">.</button>
+                        <button class="key key-equals" data-action="=">=</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right: Side Inspection Cabinet (Audit Tape & Live Smalltalk Workspace) -->
+            <aside class="inspection-cabinet">
+                <!-- Paper Audit Tape -->
+                <div class="cabinet-panel">
+                    <div class="panel-header">
+                        <span class="panel-title">📜 Audit Paper Tape</span>
+                        <button class="panel-action" id="btn-clear-tape">CLEAR TAPE</button>
+                    </div>
+                    <div class="tape-body" id="tape-container">
+                        <div class="tape-empty">Audit tape empty. Perform operations to record calculations.</div>
+                    </div>
+                </div>
+
+                <!-- Live Smalltalk Workspace & Transcript -->
+                <div class="cabinet-panel">
+                    <div class="panel-header">
+                        <span class="panel-title">⚡ Smalltalk-80 Workspace & Transcript</span>
+                        <button class="panel-action" id="btn-clear-log">CLEAR LOG</button>
+                    </div>
+                    <div class="workspace-body">
+                        <div class="transcript-log" id="transcript-log">"Welcome to SHAE Smalltalk Workspace"
+calc := ShaeCalculatorEngine new.
+calc evaluate: '42 + 0'.
+Transcript show: 'Engine online. Ready for message dispatch.'; cr.</div>
+                        <div class="workspace-input-box">
+                            <input type="text" class="workspace-input" id="ws-input" placeholder="e.g. calc evaluate: '12 * (3 + 4)' or calc memoryStore: 50" value="calc evaluate: '12 * (3 + 4)'">
+                            <button class="workspace-run-btn" id="btn-ws-eval">DO IT</button>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </main>
+
+        <!-- Footer Telemetry -->
+        <footer class="footer-bar">
+            <div>SHAE Smalltalk Architecture :: Release v0.1.0 :: MIT License</div>
+            <div class="footer-links">
+                <a class="footer-link" href="https://github.com/spdedsec/shae-smalltalk-gui-calculator" target="_blank" rel="noopener">GitHub Repository</a>
+                <a class="footer-link" href="https://github.com/spdedsec/shae-smalltalk-gui-calculator/blob/main/README.md" target="_blank" rel="noopener">Documentation</a>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/sound_fx.js"></script>
+    <script src="js/smalltalk_engine.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

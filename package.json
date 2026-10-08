@@ -1,0 +1,34 @@
+{
+  "name": "shae-smalltalk-gui-calculator",
+  "version": "0.1.0",
+  "description": "Smalltalk project: Simple GUI calculator with pure Smalltalk-80 MVC/Morphic architecture and live interactive web emulator.",
+  "main": "web/js/smalltalk_engine.js",
+  "scripts": {
+    "test": "node tests/test_runner.js",
+    "repl": "node scripts/repl.js",
+    "build": "bash scripts/build.sh",
+    "start": "npx serve web"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/spdedsec/shae-smalltalk-gui-calculator.git"
+  },
+  "keywords": [
+    "smalltalk",
+    "smalltalk-80",
+    "gui-calculator",
+    "morphic",
+    "mvc",
+    "calculator",
+    "shae",
+    "scientific-calculator",
+    "retrocomputing",
+    "xerox-parc"
+  ],
+  "author": "spdedsec <legendsatya7272@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/spdedsec/shae-smalltalk-gui-calculator/issues"
+  },
+  "homepage": "https://spdedsec.github.io/shae-smalltalk-gui-calculator/"
+}
