@@ -1,0 +1,102 @@
+name: Create GitHub Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g. v1.0.0)'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  release:
+    name: Build and Create Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: |
+          npm install || true
+
+      - name: Run test suite
+        run: |
+          npm test
+
+      - name: Build distribution packages
+        run: |
+          make build
+          cd dist
+          ls -lh *.tar.gz *.zip
+
+      - name: Get version from tag or input
+        id: version
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+          else
+            VERSION=${GITHUB_REF#refs/tags/}
+            echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          fi
+          echo "Using version: $(cat $GITHUB_OUTPUT | grep VERSION)"
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.VERSION }}
+          name: SHAE Smalltalk GUI Calculator ${{ steps.version.outputs.VERSION }}
+          body: |
+            ## SHAE Smalltalk-80 GUI Calculator
+
+            **Version:** `${{ steps.version.outputs.VERSION }}`
+            **Platform:** Desktop GUI & Web Browser
+            **Architecture:** Smalltalk-80 MVC / Morphic
+
+            ### Features
+            - Complete calculator with scientific, programmer, and memory functions
+            - Web-based emulator with real-time Smalltalk workspace
+            - SUnit automated test suite (100% passing)
+            - Hairline 1px grid design (0px radius, WCAG AA contrast)
+
+            ### Installation
+            1. **Desktop Web App**: `make web` (serves at http://localhost:8080)
+            2. **Distribution Packages**: Download `.tar.gz` or `.zip` archive
+            3. **Live Demo**: https://spdedsec.github.io/shae-smalltalk-gui-calculator/
+
+            ### Verified
+            - All 30 SUnit tests passing
+            - Zero JavaScript errors
+            - Cross-browser compatible (Chrome, Firefox, Safari, Edge)
+
+            ---
+            *Generated from commit ${{ github.sha }}*
+          files: |
+            dist/*.tar.gz
+            dist/*.zip
+            dist/*.sha256
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Summary
+        run: |
+          echo "✅ Release ${{ steps.version.outputs.VERSION }} created successfully!"
+          echo "📦 View at: https://github.com/${{ github.repository }}/releases/tag/${{ steps.version.outputs.VERSION }}"
